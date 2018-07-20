@@ -9,4 +9,6 @@ class AudioSerializers(serializers.ModelSerializer):
             'thumbnail',
             'artist',
             'title',
+            'max_bitrate',
+            'audio'
         ]

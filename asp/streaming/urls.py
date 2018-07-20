@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import audio_list
+from .views import AudioList, testView
 
 app_name = 'streaming'
 urlpatterns = [
-    path('api/audios/', audio_list, name="audio-list"),
+    path('api/audios/', AudioList.as_view(), name="audio-list"),
+    path('', testView, name="test"),
 ]

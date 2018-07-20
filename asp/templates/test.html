@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
+
+</head>
+<body class="container">
+    <form method="post" action="/api/audios/"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="title">타이틀</label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="타이틀">
+            <label for="artist">아티스트</label>
+            <input type="text" class="form-control" id="artist" name="artist" placeholder="아티스트">
+            <label for="thumbnail">썸네일</label>
+            <input type="file" class="form-control" id="thumbnail" name="thumbnail" placeholder="썸네일">
+            <label for="audio">오디오</label>
+            <input type="file" class="form-control" id="audio" name="audio" placeholder="오디오">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</body>
+</html>
