@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from mutagen.mp3 import MP3
 from django.db.models.signals import post_save, pre_save
@@ -39,29 +40,51 @@ from django.conf import settings
 import subprocess
 import sys
 import os
+
+def export(instance, kbps):
+
+    input_path = settings.MEDIA_ROOT + str(instance.audio)
+    print('kbps: ', kbps)
+    if int(kbps) >= 320:
+        bit_rate = '320k'
+
+        output_path = "{media_root}{instance_id}/{bit_rate}/{output_name}".format(media_root=settings.MEDIA_ROOT, instance_id=instance.id, bit_rate=bit_rate, output_name=instance.title)
+
+        dirpath = os.path.dirname(output_path)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+
+        ext = "ffmpeg -i {input_path} -acodec mp3 -ar 44100 -ab {bit_rate} -f segment -segment_time 20 -segment_list_size 0 -segment_list_flags -cache -segment_format mp3 -segment_list {output_path}.m3u8 {output_path}%d.mp3".format(input_path=input_path, output_path=output_path, bit_rate=bit_rate)
+        subprocess.call(ext, shell=True)
+
+    if int(kbps) >= 192:
+        bit_rate = '192k'
+
+        output_path = "{media_root}{instance_id}/{bit_rate}/{output_name}".format(media_root=settings.MEDIA_ROOT, instance_id=instance.id, bit_rate=bit_rate, output_name=instance.title)
+
+        dirpath = os.path.dirname(output_path)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+
+        ext = "ffmpeg -i {input_path} -acodec mp3 -ar 44100 -ab {bit_rate} -f segment -segment_time 20 -segment_list_size 0 -segment_list_flags -cache -segment_format mp3 -segment_list {output_path}.m3u8 {output_path}%d.mp3".format(input_path=input_path, output_path=output_path, bit_rate=bit_rate)
+        subprocess.call(ext, shell=True)
+
+
+    if int(kbps) >= 128:
+        bit_rate = '128k'
+
+        output_path = "{media_root}{instance_id}/{bit_rate}/{output_name}".format(media_root=settings.MEDIA_ROOT, instance_id=instance.id, bit_rate=bit_rate, output_name=instance.title)
+
+        dirpath = os.path.dirname(output_path)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
+
+        ext = "ffmpeg -i {input_path} -acodec mp3 -ar 44100 -ab {bit_rate} -f segment -segment_time 20 -segment_list_size 0 -segment_list_flags -cache -segment_format mp3 -segment_list {output_path}.m3u8 {output_path}%d.mp3".format(input_path=input_path, output_path=output_path, bit_rate=bit_rate)
+        subprocess.call(ext, shell=True)
+
 def audio_post_save(sender, instance, *args, **kwargs):
-    filename, ext = os.path.splitext(str(instance.audio))
-    ROOT = settings.MEDIA_ROOT.replace('\\', '/')+"/"
+    export(instance, instance.max_bitrate)
 
-    try:
-        if not (os.path.isdir(ROOT+str(instance.id))):
-            os.makedirs(os.path.join(ROOT+str(instance.id)))
-    except:
-        pass
-
-
-    def Export(kpbs):
-        ext = "ffmpeg -i " + ROOT + str(instance.audio) + \
-              " -acodec mp3 -ar 44100 -ab "+str(kpbs)+"k -f segment -segment_time 20 " \
-              "-segment_list_size 0 -segment_list_flags -cache " \
-              "-segment_format mp3 -segment_list " \
-              + ROOT + str(instance.id) + "/" + filename+".m3u8 " \
-              + ROOT + str(instance.id) + "/" + filename+"%d.mp3"
-
-        # subprocess.call(ext, shell=True)
-        # subprocess.check_output(ext, shell=True)
-        theproc = subprocess.Popen([sys.executable, ext])
-        theproc.communicate()
 
 pre_save.connect(audio_pre_save, sender=Audio)
 post_save.connect(audio_post_save, sender=Audio)
